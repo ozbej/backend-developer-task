@@ -1,0 +1,1 @@
+chmod a+r ./database/init_db.sql
