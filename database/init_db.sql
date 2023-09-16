@@ -71,3 +71,4 @@ INSERT INTO User VALUES (3, 'Jane Smith', 'janesmith', 'pass');
 /* FOLDER Entity */
 INSERT INTO Folder VALUES (1, 'Test folder 1', 1);
 INSERT INTO Folder VALUES (2, 'Test folder 2', 1);
+INSERT INTO Folder VALUES (3, 'Test folder 3', 2);

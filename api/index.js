@@ -1,29 +1,20 @@
 const express = require("express");
-const mysql = require("mysql");
+const bodyParser = require("body-parser");
 const app = express();
 
-const connection = mysql.createPool({
-  connectionLimit: 10,
-  host: process.env.MYSQL_HOST || "localhost",
-  user: process.env.MYSQL_USER || "user",
-  password: process.env.MYSQL_PASSWORD || "password",
-  database: process.env.MYSQL_DATABASE || "notes_db",
+const port = process.env.PORT || 5000;
+
+app.use(bodyParser.urlencoded({ extended: true })); // parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.json()); // parse requests of content-type - application/json
+
+app.get("/", (req, res) => {
+  res.send("Welcome to Notes API");
 });
 
-app.get("/folders/", (req, res) => {
-  connection.query("SELECT * FROM Folder", (err, rows) => {
-    if (err) {
-      res.json({
-        success: false,
-        err,
-      });
-    } else {
-      res.json({
-        success: true,
-        rows,
-      });
-    }
-  });
-});
+// Folder routes
+const folderRoutes = require("./src/routes/folder.routes");
+app.use("/api/folders", folderRoutes);
 
-app.listen(5000, () => console.log("listining on port 5000"));
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
