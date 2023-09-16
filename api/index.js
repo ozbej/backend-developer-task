@@ -1,6 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const session = require("express-session");
 const app = express();
+
+// Initialize express-session
+app.use(
+  session({
+    secret: "notes-api-secret-key",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
 
 const port = process.env.PORT || 5000;
 
@@ -10,6 +21,10 @@ app.use(bodyParser.json()); // parse requests of content-type - application/json
 app.get("/", (req, res) => {
   res.send("Welcome to Notes API");
 });
+
+// User routes
+const userRoutes = require("./src/routes/user.routes");
+app.use("/api/users", userRoutes);
 
 // Folder routes
 const folderRoutes = require("./src/routes/folder.routes");

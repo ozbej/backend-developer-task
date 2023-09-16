@@ -1,3 +1,10 @@
 # Credentials
 
-Provide a file with a list of usernames and passwords that we can use for testing.
+Seed usernames and passwords:
+
+| Username   | Password |
+| ---------- | -------- |
+| ozbejgolob | password |
+| admin      | admin    |
+| dev        | foobar   |
+| jsmith     | random   |

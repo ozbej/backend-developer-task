@@ -3,10 +3,12 @@
 const Folder = require("../models/folder.model");
 
 exports.findAll = function (req, res) {
-  Folder.findAll(function (err, folder) {
-    console.log("controller");
-    if (err) res.send(err);
-    console.log("res", folder);
-    res.send(folder);
-  });
+  try {
+    Folder.findAll(function (err, folder) {
+      if (err) res.send(err);
+      res.send(folder);
+    });
+  } catch (err) {
+    res.status(401).send(err.message);
+  }
 };

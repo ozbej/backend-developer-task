@@ -2,7 +2,8 @@ CREATE TABLE `User` (
   `id` integer PRIMARY KEY,
   `name` varchar(255),
   `username` varchar(255),
-  `password` varchar(255)
+  `password` varchar(255),
+  UNIQUE (username)
 );
 
 CREATE TABLE `Folder` (
@@ -64,9 +65,10 @@ ALTER TABLE `Note` ADD FOREIGN KEY (`note_visibility_id`) REFERENCES `NoteVisibi
 /* ----- SEEDS ----- */
 
 /* USER Entity */
-INSERT INTO User VALUES (1, 'Ozbej Golob', 'ozbejgolob', 'test');
-INSERT INTO User VALUES (2, 'John Smith', 'jsmith', 'pass');
-INSERT INTO User VALUES (3, 'Jane Smith', 'janesmith', 'pass');
+INSERT INTO User VALUES (1, 'Ozbej Golob', 'ozbejgolob', '$2a$10$JB/TiGSI1gTVuviR6Rz3Xe8aIcxpOdw5yl/irfljKjFwWxLPXiZCm');
+INSERT INTO User VALUES (2, 'Bran Stark', 'admin', '$2a$10$VSWcoMTx0s1b5pjs3Ja.GusVws4ESB90Jvj489jCFFR9uxtvgcUzW');
+INSERT INTO User VALUES (3, 'Sansa Stark', 'dev', '$2a$10$qdxybk7LO9fBmll86xL8p.5AVwqvmbMG9dfbyhFNGVB7AtE.OyHJ.');
+INSERT INTO User VALUES (4, 'James Smith', 'jsmith', '$2a$10$IfIyTgEJhUn.bzV5f3Expu3gO8P/TchiuG314Y18.BvebsZwGEfUe');
 
 /* FOLDER Entity */
 INSERT INTO Folder VALUES (1, 'Test folder 1', 1);

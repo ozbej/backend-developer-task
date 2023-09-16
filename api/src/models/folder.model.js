@@ -8,12 +8,11 @@ var Folder = function (folder) {
 };
 
 Folder.findAll = function (result) {
-  connection.query("SELECT * from Folder", function (err, res) {
+  connection.query("SELECT * FROM Folder", function (err, res) {
     if (err) {
       console.log("error: ", err);
       result(null, err);
     } else {
-      console.log("folders : ", res);
       result(null, res);
     }
   });
