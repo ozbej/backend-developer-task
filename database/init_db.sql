@@ -1,5 +1,5 @@
 CREATE TABLE `User` (
-  `id` integer PRIMARY KEY,
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
   `username` varchar(255),
   `password` varchar(255),
@@ -7,13 +7,13 @@ CREATE TABLE `User` (
 );
 
 CREATE TABLE `Folder` (
-  `id` integer PRIMARY KEY,
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
   `user_id` integer
 );
 
 CREATE TABLE `Note` (
-  `id` integer PRIMARY KEY,
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
   `folder_id` integer,
   `note_visibility_id` integer,
@@ -21,29 +21,29 @@ CREATE TABLE `Note` (
 );
 
 CREATE TABLE `NoteText` (
-  `id` integer PRIMARY KEY,
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
   `body` varchar(255),
   `note_id` integer
 );
 
 CREATE TABLE `NoteList` (
-  `id` integer PRIMARY KEY,
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
   `note_id` integer
 );
 
 CREATE TABLE `ListItem` (
-  `id` integer PRIMARY KEY,
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
   `body` varchar(255),
   `note_list_id` integer
 );
 
 CREATE TABLE `NoteVisibility` (
-  `id` integer PRIMARY KEY,
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
   `visibility` varchar(255)
 );
 
 CREATE TABLE `NoteType` (
-  `id` integer PRIMARY KEY,
+  `id` integer PRIMARY KEY AUTO_INCREMENT,
   `type` varchar(255)
 );
 
@@ -71,6 +71,11 @@ INSERT INTO User VALUES (3, 'Sansa Stark', 'dev', '$2a$10$qdxybk7LO9fBmll86xL8p.
 INSERT INTO User VALUES (4, 'James Smith', 'jsmith', '$2a$10$IfIyTgEJhUn.bzV5f3Expu3gO8P/TchiuG314Y18.BvebsZwGEfUe');
 
 /* FOLDER Entity */
-INSERT INTO Folder VALUES (1, 'Test folder 1', 1);
-INSERT INTO Folder VALUES (2, 'Test folder 2', 1);
-INSERT INTO Folder VALUES (3, 'Test folder 3', 2);
+INSERT INTO Folder VALUES (1, 'College stuff', 1);
+INSERT INTO Folder VALUES (2, 'Job stuff', 1);
+INSERT INTO Folder VALUES (3, 'Winterfell', 2);
+INSERT INTO Folder VALUES (4, 'Horses', 2);
+INSERT INTO Folder VALUES (5, 'Joffrey stuff', 3);
+INSERT INTO Folder VALUES (6, 'Dresses', 3);
+INSERT INTO Folder VALUES (7, 'Vacation notes', 4);
+INSERT INTO Folder VALUES (8, 'General notes', 4);
