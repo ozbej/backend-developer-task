@@ -65,6 +65,9 @@ ALTER TABLE `Note` ADD FOREIGN KEY (`note_visibility_id`) REFERENCES `NoteVisibi
 
 /* USER Entity */
 INSERT INTO User VALUES (1, 'Ozbej Golob', 'ozbejgolob', 'test');
+INSERT INTO User VALUES (2, 'John Smith', 'jsmith', 'pass');
+INSERT INTO User VALUES (3, 'Jane Smith', 'janesmith', 'pass');
 
 /* FOLDER Entity */
-INSERT INTO Folder (name, user_id) VALUES ('Test folder 1 mysql', 1);
+INSERT INTO Folder VALUES (1, 'Test folder 1', 1);
+INSERT INTO Folder VALUES (2, 'Test folder 2', 1);
