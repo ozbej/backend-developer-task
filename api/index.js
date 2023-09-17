@@ -33,6 +33,10 @@ app.use("/api/users", userRoutes);
 const folderRoutes = require("./src/routes/folder.routes");
 app.use("/api/folders", folderRoutes);
 
+// Note routes
+const noteRoutes = require("./src/routes/note.routes");
+app.use("/api/notes", noteRoutes);
+
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });

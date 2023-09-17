@@ -1,7 +1,7 @@
 "use strict";
-var connection = require("../../config/db.config");
+let connection = require("../../config/db.config");
 
-var Folder = function (folder) {
+const Folder = function (folder) {
   this.id = folder.id;
   this.name = folder.name;
   this.user_id = folder.user_id;

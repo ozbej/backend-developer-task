@@ -1,9 +1,8 @@
 CREATE TABLE `User` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
-  `username` varchar(255),
-  `password` varchar(255),
-  UNIQUE (username)
+  `username` varchar(255) UNIQUE,
+  `password` varchar(255)
 );
 
 CREATE TABLE `Folder` (
@@ -23,18 +22,13 @@ CREATE TABLE `Note` (
 CREATE TABLE `NoteText` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `body` varchar(255),
-  `note_id` integer
+  `note_id` integer UNIQUE
 );
 
-CREATE TABLE `NoteList` (
-  `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `note_id` integer
-);
-
-CREATE TABLE `ListItem` (
+CREATE TABLE `NoteListItem` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `body` varchar(255),
-  `note_list_id` integer
+  `note_id` integer
 );
 
 CREATE TABLE `NoteVisibility` (
@@ -51,11 +45,9 @@ ALTER TABLE `Folder` ADD FOREIGN KEY (`user_id`) REFERENCES `User` (`id`);
 
 ALTER TABLE `Note` ADD FOREIGN KEY (`folder_id`) REFERENCES `Folder` (`id`);
 
-ALTER TABLE `NoteText` ADD FOREIGN KEY (`note_id`) REFERENCES `Note` (`id`);
+ALTER TABLE `NoteText` ADD FOREIGN KEY (`note_id`) REFERENCES `Note` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `NoteList` ADD FOREIGN KEY (`note_id`) REFERENCES `Note` (`id`);
-
-ALTER TABLE `ListItem` ADD FOREIGN KEY (`note_list_id`) REFERENCES `NoteList` (`id`);
+ALTER TABLE `NoteListItem` ADD FOREIGN KEY (`note_id`) REFERENCES `Note` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `Note` ADD FOREIGN KEY (`note_type_id`) REFERENCES `NoteType` (`id`);
 
@@ -79,3 +71,27 @@ INSERT INTO Folder VALUES (5, 'Joffrey stuff', 3);
 INSERT INTO Folder VALUES (6, 'Dresses', 3);
 INSERT INTO Folder VALUES (7, 'Vacation notes', 4);
 INSERT INTO Folder VALUES (8, 'General notes', 4);
+
+/* NOTE TYPE Entity */
+INSERT INTO NoteType VALUES (1, 'text');
+INSERT INTO NoteType VALUES (2, 'list');
+
+/* NOTE VISIBILITY Entity */
+INSERT INTO NoteVisibility VALUES (1, 'shared');
+INSERT INTO NoteVisibility VALUES (2, 'private');
+
+/* NOTE Entity */
+INSERT INTO Note VALUES (1, "HPC", 1, 1, 1);
+INSERT INTO Note VALUES (2, "Masters thesis", 1, 2, 1);
+INSERT INTO Note VALUES (3, "Masters thesis TODO", 1, 2, 2);
+
+/* NOTE TEXT Entity */
+INSERT INTO NoteText VALUES (1, "I have to do stuff for HPC", 1);
+INSERT INTO NoteText VALUES (2, "According to my mentor, I still have a lot to do", 2);
+
+/* NOTE LIST ITEM Entity */
+INSERT INTO NoteListItem VALUES (1, "Research similar works", 3);
+INSERT INTO NoteListItem VALUES (2, "Research relevant technologies", 3);
+INSERT INTO NoteListItem VALUES (3, "Start writing the application", 3);
+
+
