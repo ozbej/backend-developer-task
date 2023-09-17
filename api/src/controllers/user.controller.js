@@ -49,18 +49,22 @@ exports.loginUser = function (req, res) {
       );
     });
   } catch (err) {
-    res.status(401).send(err.message);
+    res.status(400).send(err.message);
   }
 };
 
 exports.logoutUser = function (req, res) {
-  if (!req.session.isLoggedIn)
-    return res.status(400).json({ message: "Already logged out" });
+  try {
+    if (!req.session.isLoggedIn)
+      return res.status(400).json({ message: "Already logged out" });
 
-  const username = req.session.userData.username;
-  req.session.isLoggedIn = false;
-  req.session.userData = {};
-  return res.status(200).json({
-    message: `User logged out successfully. Bye ${username}!`,
-  });
+    const username = req.session.userData.username;
+    req.session.isLoggedIn = false;
+    req.session.userData = {};
+    return res.status(200).json({
+      message: `User logged out successfully. Bye ${username}!`,
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 };

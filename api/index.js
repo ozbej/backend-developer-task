@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const swaggerConfig = require("./swagger");
 const app = express();
 
 // Initialize express-session
@@ -12,6 +13,8 @@ app.use(
     cookie: { secure: false },
   })
 );
+
+swaggerConfig(app); // Integrate Swagger middleware
 
 const port = process.env.PORT || 5000;
 
