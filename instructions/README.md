@@ -1,11 +1,7 @@
 # Setup
 
-Provide a file with instructions on how to set up and use the API:
-* dependencies
-* variables to be set
-* run configs
-* file system permissions
-* ...
+From `/instructions` folder run `docker-compose up`. After that, the API is running.
 
-### Optional
-You can provide Docker and Docker Compose files instead.
+- API is running on http://localhost:5000/api/
+- Swagger API documentation is running on http://localhost:5000/api-docs/
+- phpMyAdmin is running on http://localhost:8080/

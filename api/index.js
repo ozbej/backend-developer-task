@@ -21,8 +21,10 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended: true })); // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse requests of content-type - application/json
 
-app.get("/", (req, res) => {
-  res.send("Welcome to Notes API");
+app.get("/api", (req, res) => {
+  res.send(
+    "Welcome to Notes API. Please visit http://localhost:5000/api-docs/ for API documentation."
+  );
 });
 
 // User routes
