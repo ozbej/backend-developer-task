@@ -93,9 +93,9 @@ const noteController = require("../controllers/note.controller");
 
 /**
  * @swagger
- * /api/notes/text:
+ * /api/notes/:
  *   post:
- *     summary: Create a new note of type text
+ *     summary: Create a new note
  *     tags: [Notes]
  *     requestBody:
  *       description: Note object to be created
@@ -103,7 +103,7 @@ const noteController = require("../controllers/note.controller");
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/NoteTextNoId'
+ *             $ref: '#/components/schemas/NoteNoId'
  *     responses:
  *       '200':
  *         description: Note created successfully
@@ -112,30 +112,7 @@ const noteController = require("../controllers/note.controller");
  *       '401':
  *         description: Not logged in
  */
-router.post("/text", noteController.createText);
-
-/**
- * @swagger
- * /api/notes/list:
- *   post:
- *     summary: Create a new note of type list
- *     tags: [Notes]
- *     requestBody:
- *       description: Note object to be created
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/NoteListNoId'
- *     responses:
- *       '200':
- *         description: Note created successfully
- *       '400':
- *         description: Invalid input or error during request
- *       '401':
- *         description: Not logged in
- */
-router.post("/list", noteController.createList);
+router.post("/", noteController.create);
 
 /**
  * @swagger
@@ -193,6 +170,37 @@ router.post("/list", noteController.createList);
  *         description: Not logged in
  */
 router.get("/", noteController.findAll);
+/**
+ * @swagger
+ * /api/notes/text:
+ *   get:
+ *     summary: Get all notes text
+ *     tags: [Notes]
+ *     responses:
+ *       '200':
+ *         description: List of notes text
+ *       '400':
+ *         description: Invalid input or error during request
+ *       '401':
+ *         description: Not logged in
+ */
+router.get("/text", noteController.findText);
+
+/**
+ * @swagger
+ * /api/notes/listItems:
+ *   get:
+ *     summary: Get all list items
+ *     tags: [Notes]
+ *     responses:
+ *       '200':
+ *         description: List of list items
+ *       '400':
+ *         description: Invalid input or error during request
+ *       '401':
+ *         description: Not logged in
+ */
+router.get("/listItems", noteController.findListItems);
 
 /**
  * @swagger
@@ -226,9 +234,79 @@ router.put("/:id", noteController.update);
 
 /**
  * @swagger
+ * /api/notes/text/{id}:
+ *   put:
+ *     summary: Update note text by ID
+ *     tags: [Notes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the note text to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       description: Updated note text object
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               body:
+ *                 type: string
+ *               note_id:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: Note text updated successfully
+ *       '400':
+ *         description: Invalid input or error during request
+ *       '401':
+ *         description: Not logged in
+ */
+router.put("/text/:id", noteController.updateText);
+
+/**
+ * @swagger
+ * /api/notes/listItems/{id}:
+ *   put:
+ *     summary: Update note list item by ID
+ *     tags: [Notes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the note list item to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       description: Updated note list item object
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               body:
+ *                 type: string
+ *               note_id:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: Note list item updated successfully
+ *       '400':
+ *         description: Invalid input or error during request
+ *       '401':
+ *         description: Not logged in
+ */
+router.put("/listItems/:id", noteController.updateListItem);
+
+/**
+ * @swagger
  * /api/notes/{id}:
  *   delete:
- *     summary: Delete note by ID
+ *     summary: Delete note and belonging text by ID
  *     tags: [Notes]
  *     parameters:
  *       - in: path

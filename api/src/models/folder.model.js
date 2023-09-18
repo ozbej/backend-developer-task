@@ -23,7 +23,7 @@ Folder.findAll = function (result) {
   connection.query("SELECT * FROM Folder", function (err, res) {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
     } else {
       result(null, res);
     }
@@ -62,12 +62,12 @@ Folder.findByUserId = function (id, result) {
 
 Folder.update = function (id, folder, result) {
   connection.query(
-    "UPDATE Folder SET name=? WHERE id = ?",
-    [folder.name, id],
+    "UPDATE Folder SET name=?,user_id=? WHERE id = ?",
+    [folder.name, folder.user_id, id],
     function (err, res) {
       if (err) {
         console.log("error: ", err);
-        result(null, err);
+        result(err, null);
       } else {
         result(null, res);
       }
@@ -79,7 +79,7 @@ Folder.delete = function (id, result) {
   connection.query("DELETE FROM Folder WHERE id = ?", id, function (err, res) {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
     } else {
       result(null, res);
     }

@@ -63,10 +63,12 @@ NoteListItem.create = function (newNoteListItem, result) {
 };
 
 Note.findAll = function (sort, filter, result) {
-  const query = `SELECT
+  const query = `
+    SELECT
         n.id AS id,
         n.name AS name,
         n.folder_id AS folder_id,
+        f.user_id AS user_id,
         nv.visibility AS note_visibility,
         ntype.type AS note_type,
         ntext.body AS body,
@@ -81,13 +83,37 @@ Note.findAll = function (sort, filter, result) {
         NoteVisibility nv ON n.note_visibility_id = nv.id
     LEFT JOIN
         NoteType ntype ON n.note_type_id = ntype.id
+    LEFT JOIN
+        Folder f ON n.folder_id = f.id
     ${filter ? `WHERE ${filter}` : ""}
     ${sort ? `ORDER BY ${sort}` : ""};`;
   console.log(query);
   connection.query(query, function (err, res) {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
+    } else {
+      result(null, res);
+    }
+  });
+};
+
+NoteText.findAll = function (result) {
+  connection.query("SELECT * FROM NoteText", function (err, res) {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+    } else {
+      result(null, res);
+    }
+  });
+};
+
+NoteListItem.findAll = function (result) {
+  connection.query("SELECT * FROM NoteListItem", function (err, res) {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
     } else {
       result(null, res);
     }
@@ -101,7 +127,37 @@ Note.update = function (id, note, result) {
     function (err, res) {
       if (err) {
         console.log("error: ", err);
-        result(null, err);
+        result(err, null);
+      } else {
+        result(null, res);
+      }
+    }
+  );
+};
+
+NoteText.update = function (id, text, result) {
+  connection.query(
+    "UPDATE NoteText SET body=?,note_id=? WHERE id = ?",
+    [text.body, text.note_id, id],
+    function (err, res) {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+      } else {
+        result(null, res);
+      }
+    }
+  );
+};
+
+NoteListItem.update = function (id, listItem, result) {
+  connection.query(
+    "UPDATE NoteListItem SET body=?,note_id=? WHERE id = ?",
+    [listItem.body, listItem.note_id, id],
+    function (err, res) {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
       } else {
         result(null, res);
       }
@@ -113,7 +169,7 @@ Note.delete = function (id, result) {
   connection.query("DELETE FROM Note WHERE id = ?", id, function (err, res) {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
     } else {
       result(null, res);
     }

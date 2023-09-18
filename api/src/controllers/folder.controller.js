@@ -7,7 +7,7 @@ exports.create = function (req, res) {
     if (!req.session.isLoggedIn)
       return res.status(401).json({ message: "Log in to perform this action" });
 
-    if (!req.body.name || Object.keys(req.body).length !== 1) {
+    if (req.body.name === undefined || Object.keys(req.body).length !== 1) {
       return res
         .status(400)
         .send({ error: true, message: "Please provide all required field" });
@@ -16,7 +16,7 @@ exports.create = function (req, res) {
     req.body.user_id = req.session.userData.id; // Add user id
     const newFolder = new Folder(req.body);
     Folder.create(newFolder, function (err, folder) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
       else
         res.json({
           id: folder,
@@ -33,7 +33,7 @@ exports.findAll = function (req, res) {
       return res.status(401).json({ message: "Log in to perform this action" });
 
     Folder.findAll(function (err, folder) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
       else res.send(folder);
     });
   } catch (err) {
@@ -47,7 +47,7 @@ exports.findById = function (req, res) {
       return res.status(401).json({ message: "Log in to perform this action" });
 
     Folder.findById(req.params.id, function (err, folder) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
       else res.json(folder);
     });
   } catch (err) {
@@ -61,7 +61,7 @@ exports.findByUserId = function (req, res) {
       return res.status(401).json({ message: "Log in to perform this action" });
 
     Folder.findByUserId(req.params.id, function (err, folder) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
       else res.json(folder);
     });
   } catch (err) {
@@ -74,13 +74,19 @@ exports.update = function (req, res) {
     if (!req.session.isLoggedIn)
       return res.status(401).json({ message: "Log in to perform this action" });
 
-    if (!req.body.name) {
+    if (
+      req.body.name === undefined ||
+      req.body.user_id === undefined ||
+      Object.keys(req.body).length !== 2
+    ) {
       return res
         .status(400)
         .send({ error: true, message: "Please provide all required field" });
     }
     Folder.update(req.params.id, new Folder(req.body), function (err, folder) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
+      else if (folder.affectedRows === 0)
+        res.json({ error: false, message: "No rows affected" });
       else res.json({ error: false, message: "Folder successfully updated" });
     });
   } catch (err) {
@@ -91,7 +97,9 @@ exports.update = function (req, res) {
 exports.delete = function (req, res) {
   try {
     Folder.delete(req.params.id, function (err, folder) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
+      else if (folder.affectedRows === 0)
+        res.json({ error: false, message: "No rows affected" });
       else res.json({ error: false, message: "Folder successfully deleted" });
     });
   } catch (err) {

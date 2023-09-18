@@ -21,13 +21,13 @@ CREATE TABLE `Note` (
 
 CREATE TABLE `NoteText` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `body` varchar(255),
+  `body` text,
   `note_id` integer UNIQUE
 );
 
 CREATE TABLE `NoteListItem` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `body` varchar(255),
+  `body` text,
   `note_id` integer
 );
 
@@ -64,9 +64,9 @@ INSERT INTO User VALUES (4, 'James Smith', 'jsmith', '$2a$10$IfIyTgEJhUn.bzV5f3E
 
 /* FOLDER Entity */
 INSERT INTO Folder VALUES (1, 'College stuff', 1);
-INSERT INTO Folder VALUES (2, 'Job stuff', 1);
+INSERT INTO Folder VALUES (2, 'Other stuff', 1);
 INSERT INTO Folder VALUES (3, 'Winterfell', 2);
-INSERT INTO Folder VALUES (4, 'Horses', 2);
+INSERT INTO Folder VALUES (4, 'Westeros', 2);
 INSERT INTO Folder VALUES (5, 'Joffrey stuff', 3);
 INSERT INTO Folder VALUES (6, 'Dresses', 3);
 INSERT INTO Folder VALUES (7, 'Vacation notes', 4);
@@ -81,17 +81,33 @@ INSERT INTO NoteVisibility VALUES (1, 'shared');
 INSERT INTO NoteVisibility VALUES (2, 'private');
 
 /* NOTE Entity */
-INSERT INTO Note VALUES (1, "HPC", 1, 1, 1);
+INSERT INTO Note VALUES (1, "HPC", 1, 2, 1);
 INSERT INTO Note VALUES (2, "Masters thesis", 1, 2, 1);
 INSERT INTO Note VALUES (3, "Masters thesis TODO", 1, 2, 2);
+INSERT INTO Note VALUES (4, "Public note for announcements", 2, 1, 1);
+INSERT INTO Note VALUES (5, "Winterfell notes", 3, 2, 1);
+INSERT INTO Note VALUES (6, "Public announcement to the Lords of Westeros", 4, 1, 1);
+INSERT INTO Note VALUES (7, "Winterfell TODO", 3, 2, 2);
+INSERT INTO Note VALUES (8, "Wedding Joffrey", 5, 2, 2);
 
 /* NOTE TEXT Entity */
-INSERT INTO NoteText VALUES (1, "I have to do stuff for HPC", 1);
-INSERT INTO NoteText VALUES (2, "According to my mentor, I still have a lot to do", 2);
+INSERT INTO NoteText VALUES (1, "I have to do stuff for HPC.", 1);
+INSERT INTO NoteText VALUES (2, "According to my mentor, I still have a lot to do.", 2);
+INSERT INTO NoteText VALUES (3, "I want to notify the public that I will be particing in the marathon.", 4);
+INSERT INTO NoteText VALUES (4, "Winterfell's walls need repair since they are weakened.", 5);
+INSERT INTO NoteText VALUES (5, "I announce to the lords of westeros that ...", 6);
 
 /* NOTE LIST ITEM Entity */
 INSERT INTO NoteListItem VALUES (1, "Research similar works", 3);
 INSERT INTO NoteListItem VALUES (2, "Research relevant technologies", 3);
 INSERT INTO NoteListItem VALUES (3, "Start writing the application", 3);
+INSERT INTO NoteListItem VALUES (4, "Repair stables", 7);
+INSERT INTO NoteListItem VALUES (5, "Fix wall", 7);
+INSERT INTO NoteListItem VALUES (6, "Write a letter to Sansa", 7);
+INSERT INTO NoteListItem VALUES (7, "Go riding", 7);
+INSERT INTO NoteListItem VALUES (8, "Buy flowers", 8);
+INSERT INTO NoteListItem VALUES (9, "Set tents", 8);
+INSERT INTO NoteListItem VALUES (10, "Get cake", 8);
+INSERT INTO NoteListItem VALUES (11, "Get entertainment", 8);
 
 

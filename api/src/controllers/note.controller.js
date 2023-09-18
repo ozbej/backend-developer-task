@@ -39,17 +39,16 @@ function filterNotes(notes) {
   return mergedItems;
 }
 
-exports.createText = function (req, res) {
+exports.create = function (req, res) {
   try {
     if (!req.session.isLoggedIn)
       return res.status(401).json({ message: "Log in to perform this action" });
 
     if (
-      !req.body.name ||
-      !req.body.folder_id ||
-      !req.body.note_visibility ||
-      !req.body.note_type ||
-      !req.body.body ||
+      req.body.name === undefined ||
+      req.body.folder_id === undefined ||
+      req.body.note_visibility === undefined ||
+      req.body.note_type === undefined ||
       Object.keys(req.body).length !== 5
     ) {
       return res
@@ -63,63 +62,48 @@ exports.createText = function (req, res) {
       note_visibility_id: noteVisibilityMap.get(req.body.note_visibility),
       note_type_id: noteTypeMap.get(req.body.note_type),
     });
-    Note.create(newNote, function (err, noteId) {
-      if (err) res.send(err);
-      else {
-        const newNoteText = new NoteText({
-          body: req.body.body,
-          note_id: noteId,
-        });
-        NoteText.create(newNoteText, function (err, noteTextId) {
-          if (err) res.send(err);
-          else res.json({ id: noteId });
-        });
-      }
-    });
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-};
 
-exports.createList = function (req, res) {
-  try {
-    if (!req.session.isLoggedIn)
-      return res.status(401).json({ message: "Log in to perform this action" });
+    if (req.body.note_type === "text") {
+      if (req.body.body === undefined)
+        return res
+          .status(400)
+          .send({ error: true, message: "Please provide all required fields" });
 
-    if (
-      !req.body.name ||
-      !req.body.folder_id ||
-      !req.body.note_visibility ||
-      !req.body.note_type ||
-      !req.body.list_items ||
-      Object.keys(req.body).length !== 5
-    ) {
-      return res
-        .status(400)
-        .send({ error: true, message: "Please provide all required fields" });
-    }
-
-    const newNote = new Note({
-      name: req.body.name,
-      folder_id: req.body.folder_id,
-      note_visibility_id: noteVisibilityMap.get(req.body.note_visibility),
-      note_type_id: noteTypeMap.get(req.body.note_type),
-    });
-    Note.create(newNote, function (err, noteId) {
-      if (err) res.send(err);
-      else {
-        req.body.list_items.forEach((item) => {
-          const newNoteText = new NoteListItem({
-            body: item,
+      Note.create(newNote, function (err, noteId) {
+        if (err) return res.send(err?.code ? err.code : err);
+        else {
+          const newNoteText = new NoteText({
+            body: req.body.body,
             note_id: noteId,
           });
-          NoteListItem.create(newNoteText, function (err, noteListItemId) {
-            if (err) return res.send(err);
+          NoteText.create(newNoteText, function (err, noteTextId) {
+            if (err) return res.send(err?.code ? err.code : err);
+            else res.json({ id: noteId });
           });
-        });
-        res.json({ id: noteId });
-      }
-    });
+        }
+      });
+    } else if (req.body.note_type === "list") {
+      if (req.body.list_items === undefined)
+        return res
+          .status(400)
+          .send({ error: true, message: "Please provide all required fields" });
+
+      Note.create(newNote, function (err, noteId) {
+        if (err) return res.send(err?.code ? err.code : err);
+        else {
+          req.body.list_items.forEach((item) => {
+            const newNoteText = new NoteListItem({
+              body: item,
+              note_id: noteId,
+            });
+            NoteListItem.create(newNoteText, function (err, noteListItemId) {
+              if (err) return res.send(err?.code ? err.code : err);
+            });
+          });
+          res.json({ id: noteId });
+        }
+      });
+    }
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -127,9 +111,6 @@ exports.createList = function (req, res) {
 
 exports.findAll = function (req, res) {
   try {
-    if (!req.session.isLoggedIn)
-      return res.status(401).json({ message: "Log in to perform this action" });
-
     let sortString = "";
     let filterString = "";
 
@@ -170,15 +151,29 @@ exports.findAll = function (req, res) {
     }
 
     // Filter by visibility
-    if (req.query.filterVisibility) {
-      if (!noteVisibilityMap.has(req.query.filterVisibility))
+    if (filterString.length !== 0) filterString += " AND ";
+    const filterVisibility = req.query.filterVisibility;
+    if (filterVisibility) {
+      if (!noteVisibilityMap.has(filterVisibility))
         return res.status(400).json({
           error: true,
           message: "Invalid filterVisibility parameter value",
         });
 
-      if (filterString.length !== 0) filterString += " AND ";
-      filterString += `nv.visibility = '${req.query.filterVisibility}'`;
+      if (filterVisibility === "private") {
+        if (!req.session.isLoggedIn)
+          return res
+            .status(401)
+            .json({ message: "Log in to get private notes" });
+
+        filterString += `(nv.visibility = 'private' AND f.user_id = ${req.session.userData.id})`;
+      } else filterString += `nv.visibility = 'shared'`;
+    } else {
+      filterString += `(nv.visibility = 'shared' ${
+        req.session.isLoggedIn
+          ? `OR f.user_id = ${req.session.userData.id}`
+          : ""
+      })`;
     }
 
     // Filter by note text
@@ -189,14 +184,42 @@ exports.findAll = function (req, res) {
 
     Note.findAll(
       sortString.length > 0 ? sortString : undefined,
-      filterString.length > 0 ? filterString : undefined,
+      filterString,
       function (err, notes) {
-        if (err) res.send(err);
+        if (err) return res.send(err?.code ? err.code : err);
         else {
           res.send(filterNotes(notes));
         }
       }
     );
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
+
+exports.findText = function (req, res) {
+  try {
+    if (!req.session.isLoggedIn)
+      return res.status(401).json({ message: "Log in to perform this action" });
+
+    NoteText.findAll(function (err, item) {
+      if (err) return res.send(err?.code ? err.code : err);
+      else res.send(item);
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
+
+exports.findListItems = function (req, res) {
+  try {
+    if (!req.session.isLoggedIn)
+      return res.status(401).json({ message: "Log in to perform this action" });
+
+    NoteListItem.findAll(function (err, item) {
+      if (err) return res.send(err?.code ? err.code : err);
+      else res.send(item);
+    });
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -225,9 +248,70 @@ exports.update = function (req, res) {
       note_type_id: noteTypeMap.get(req.body.note_type),
     });
     Note.update(req.params.id, newNote, function (err, note) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
+      else if (note.affectedRows === 0)
+        res.json({ error: false, message: "No rows affected" });
       else res.json({ error: false, message: "Note successfully updated" });
     });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
+
+exports.updateText = function (req, res) {
+  try {
+    if (!req.session.isLoggedIn)
+      return res.status(401).json({ message: "Log in to perform this action" });
+
+    if (
+      req.body.body === undefined ||
+      req.body.note_id === undefined ||
+      Object.keys(req.body).length !== 2
+    ) {
+      return res
+        .status(400)
+        .send({ error: true, message: "Please provide all required field" });
+    }
+    NoteText.update(
+      req.params.id,
+      new NoteText(req.body),
+      function (err, text) {
+        if (err) return res.send(err?.code ? err.code : err);
+        else if (text.affectedRows === 0)
+          res.json({ error: false, message: "No rows affected" });
+        else res.json({ error: false, message: "Text successfully updated" });
+      }
+    );
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
+
+exports.updateListItem = function (req, res) {
+  try {
+    if (!req.session.isLoggedIn)
+      return res.status(401).json({ message: "Log in to perform this action" });
+
+    if (
+      req.body.body === undefined ||
+      req.body.note_id === undefined ||
+      Object.keys(req.body).length !== 2
+    ) {
+      return res
+        .status(400)
+        .send({ error: true, message: "Please provide all required field" });
+    }
+    NoteListItem.update(
+      req.params.id,
+      new NoteListItem(req.body),
+      function (err, listItem) {
+        if (err) return res.send(err?.code ? err.code : err);
+        else if (listItem.affectedRows === 0)
+          res.json({ error: false, message: "No rows affected" });
+        else
+          res.json({ error: false, message: "ListItem successfully updated" });
+      }
+    );
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -236,7 +320,9 @@ exports.update = function (req, res) {
 exports.delete = function (req, res) {
   try {
     Note.delete(req.params.id, function (err, note) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
+      else if (listItem.affectedRows === 0)
+        res.json({ error: false, message: "No rows affected" });
       else res.json({ error: false, message: "Note successfully deleted" });
     });
   } catch (err) {

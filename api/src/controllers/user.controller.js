@@ -10,18 +10,18 @@ exports.loginUser = function (req, res) {
       return res.status(400).json({ message: "Already logged in" });
 
     if (
-      (req.body.constructor === Object && Object.keys(req.body).length !== 2) ||
-      !req.body.username ||
-      !req.body.password
+      req.body.username === undefined ||
+      req.body.password === undefined ||
+      Object.keys(req.body).length !== 2
     )
       return res
         .status(400)
         .json({ message: "Please provide both username and password" });
 
     User.getOneUser(req.body.username, function (err, user) {
-      if (err) res.send(err);
+      if (err) return res.send(err?.code ? err.code : err);
 
-      if (!user || user.length === 0)
+      if (user === undefined || user.length === 0)
         return res.status(401).json({ message: "Invalid credentials" });
 
       bcrypt.compare(
